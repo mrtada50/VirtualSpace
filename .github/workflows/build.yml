@@ -15,10 +15,11 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Accept licenses and install NDK
+      - name: Licenses and NDK
         run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "ndk;29.0.13846066" || true
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "ndk;29.0.13846066" || echo ">>> NDK 29.0.13846066 not installable"
+          echo "Installed NDKs:"; ls "$ANDROID_HOME/ndk"
 
       - name: Fetch BlackBox engine
         run: |
@@ -30,10 +31,14 @@ jobs:
               rm -rf "$n"; cp -r "$d" "$n"; echo "module: $n"
             fi
           done
-          echo "=== engine root build.gradle ==="
-          cat engine-src/build.gradle 2>/dev/null || cat engine-src/build.gradle.kts 2>/dev/null || true
-          echo "=== engine settings ==="
-          cat engine-src/settings.gradle 2>/dev/null || cat engine-src/settings.gradle.kts 2>/dev/null || true
+
+      - name: Align NDK version
+        run: |
+          WANT=29.0.13846066
+          if [ -d "$ANDROID_HOME/ndk/$WANT" ]; then V=$WANT; else V=$(ls "$ANDROID_HOME/ndk" | sort -V | tail -n1); fi
+          echo "Using NDK $V"
+          grep -rl "$WANT" . --include=*.gradle --include=*.kts --include=*.properties 2>/dev/null | xargs -r sed -i "s/$WANT/$V/g"
+          grep -rn "ndkVersion" . --include=*.gradle --include=*.kts 2>/dev/null || true
 
       - uses: gradle/actions/setup-gradle@v4
         with:
