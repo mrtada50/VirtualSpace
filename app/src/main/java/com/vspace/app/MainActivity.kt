@@ -21,6 +21,7 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = "Virtual Space"
+        if (android.os.Build.VERSION.SDK_INT >= 23) requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION), 1)
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
