@@ -12,3 +12,11 @@ extra["buildToolsVersion"] = "34.0.0"
 extra["versionCode"] = 1
 extra["versionName"] = "1.0"
 extra["javaVersion"] = JavaVersion.VERSION_17
+
+// أسماء إضافية يقرأها Bcore
+extra["minSdk"] = 21
+extra["targetSdk"] = 28
+extra["compileSdk"] = 34
+extra["ndkVersion"] = "29.0.13846066"
+extra["kotlin_version"] = "1.9.24"
+extra["java_version"] = JavaVersion.VERSION_17
