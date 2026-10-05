@@ -22,12 +22,18 @@ jobs:
 
       - name: Fetch BlackBox engine
         run: |
+          rm -rf engine-src
           git clone --depth 1 https://github.com/ALEX5402/NewBlackbox engine-src
-          BC=$(find engine-src -maxdepth 1 -iname bcore | head -n1)
-          echo "Engine module: $BC"
-          rm -rf Bcore && cp -r "$BC" Bcore
-          ls Bcore
-          cat Bcore/build.gradle
+          for d in engine-src/*/; do
+            n=$(basename "$d")
+            if [ "$n" != "app" ] && { [ -f "$d/build.gradle" ] || [ -f "$d/build.gradle.kts" ]; }; then
+              rm -rf "$n"; cp -r "$d" "$n"; echo "module: $n"
+            fi
+          done
+          echo "=== engine root build.gradle ==="
+          cat engine-src/build.gradle 2>/dev/null || cat engine-src/build.gradle.kts 2>/dev/null || true
+          echo "=== engine settings ==="
+          cat engine-src/settings.gradle 2>/dev/null || cat engine-src/settings.gradle.kts 2>/dev/null || true
 
       - uses: gradle/actions/setup-gradle@v4
         with:

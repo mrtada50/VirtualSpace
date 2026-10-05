@@ -7,5 +7,12 @@ dependencyResolutionManagement {
 }
 rootProject.name = "VirtualSpace"
 include(":app")
-// محرك BlackBox يُنسخ تلقائياً بواسطة GitHub Actions (أو setup-engine.sh)
-if (file("Bcore").exists()) include(":Bcore")
+
+// موديولات المحرك تُنسخ بواسطة GitHub Actions، وتُضمَّن هنا تلقائياً
+val skip = setOf("app", "engine-src", "buildSrc", "build")
+rootDir.listFiles()
+    ?.filter {
+        it.isDirectory && !it.name.startsWith(".") && it.name !in skip &&
+            (File(it, "build.gradle").exists() || File(it, "build.gradle.kts").exists())
+    }
+    ?.forEach { include(":${it.name}") }
